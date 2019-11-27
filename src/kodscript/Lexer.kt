@@ -9,7 +9,7 @@ enum class TokenType {
     // Expression
     PLUS, MINUS, MULTIPLY,
     DIVIDE_DOWN, DIVIDE_UP,
-    DOT,
+    DOT, ASSIGN, EQUALS,
 
     // Functional
     OPEN_PAREN, CLOSE_PAREN,
@@ -30,7 +30,8 @@ private enum class State {
 
     NumberLike, DiceTransition, DiceRead,
     CheckIdent, InIdent,
-    DivideCheck
+    DivideCheck,
+    EqualCheck
 }
 
 class ParseError(override val message: String,
@@ -89,7 +90,7 @@ fun tokenizeScript(stream: PushbackInputStream): ArrayList<Token> {
                     }
 
                     'd', 'D' -> {
-                        tokenParts.append(char);
+                        tokenParts.append(char)
                         state = State.CheckIdent
                     }
 
@@ -106,9 +107,19 @@ fun tokenizeScript(stream: PushbackInputStream): ArrayList<Token> {
                     '*' -> finishToken(TokenType.MULTIPLY, keepChar = true)
                     '/' -> { tokenParts.append(char); state = State.DivideCheck }
 
+                    '=' -> { tokenParts.append(char); state = State.EqualCheck }
+
                     ' ', '\t', '\r' -> { /* Just ignore whitespace */ }
                     '\n' -> { line += 1; column = 0 }
                     else -> badCharacter()
+                }
+            }
+
+            State.EqualCheck -> {
+                // Is it an assignment or and equality check?
+                when (char) {
+                    '=' -> finishToken(TokenType.EQUALS, keepChar = true)
+                    else -> finishToken(TokenType.ASSIGN)
                 }
             }
 

@@ -1,7 +1,5 @@
-import kodscript.DiceRoll
+import kodscript.*
 import kodscript.Number
-import kodscript.PlusOP
-import kodscript.tokenizeScript
 import util.loop
 import java.io.InputStream
 import java.io.PushbackInputStream
@@ -15,6 +13,9 @@ fun main() {
         if (line != null) {
             val tokens = tokenizeScript(PushbackInputStream(line.byteInputStream()))
             println("Tokens: $tokens")
+
+            val tree = parseTokens(tokens)
+            println("AST: $tree")
         }
     }
 }

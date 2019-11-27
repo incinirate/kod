@@ -70,3 +70,25 @@ class PlusOP(override val lhs: RightASTNode,
         throw RuntimeError("Objects (${lval.javaClass.name}, ${rval.javaClass.name}) are not eligible for addition")
     }
 }
+
+class UnaryPlus(override val term: RightASTNode): PureUnaryOperation() {
+
+    override fun performOperation(): Any {
+        when (val value: Any = term.performOperation()) {
+            is Int -> return +value
+        }
+
+        throw RuntimeError("Object (${term.javaClass.name} is not eligible for unary plus")
+    }
+}
+
+class UnaryMinus(override val term: RightASTNode): PureUnaryOperation() {
+
+    override fun performOperation(): Any {
+        when (val value: Any = term.performOperation()) {
+            is Int -> return -value
+        }
+
+        throw RuntimeError("Object (${term.javaClass.name} is not eligible for unary minus")
+    }
+}
